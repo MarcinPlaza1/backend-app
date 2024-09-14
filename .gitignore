@@ -1,0 +1,16 @@
+node_modules/
+
+.env
+.env.local
+.env.development
+.env.production
+
+logs
+*.log
+
+tmp/
+dist/
+coverage/
+
+.DS_Store
+node_modules/
