@@ -25,8 +25,6 @@ const commentSchema = new mongoose.Schema({
   },
 });
 
-commentSchema.index({ post: 1 });
-commentSchema.index({ author: 1 });
-commentSchema.index({ createdAt: -1 });
+commentSchema.index({ post: 1, author: 1, createdAt: -1 });
 
 module.exports = mongoose.model('Comment', commentSchema);
