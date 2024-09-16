@@ -12,7 +12,6 @@ const logger = require('../utils/logger');
 
 const UserModel = require('../models/User');
 
-// Funkcja do pobierania użytkownika z tokenu
 const getUserFromToken = async (token) => {
   if (!token) return null;
   try {
@@ -27,7 +26,6 @@ const getUserFromToken = async (token) => {
 const setupGraphQL = async (app, httpServer) => {
   const schema = makeExecutableSchema({ typeDefs, resolvers });
 
-  // Serwer WebSocket
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: '/graphql',
@@ -45,7 +43,6 @@ const setupGraphQL = async (app, httpServer) => {
     wsServer
   );
 
-  // Konfiguracja Apollo Server
   const server = new ApolloServer({
     schema,
     context: async ({ req }) => {

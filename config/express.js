@@ -1,4 +1,3 @@
-// config/express.js
 const express = require('express');
 const rateLimiter = require('../middleware/rateLimiter');
 const configureHelmet = require('../middleware/helmetConfig');
@@ -13,7 +12,6 @@ const logger = require('../utils/logger');
 const configureExpress = () => {
   const app = express();
 
-  // Zastosowanie middleware'ów
   app.use(rateLimiter);
   app.use(configureHelmet());
   app.use(corsConfig);
@@ -23,12 +21,8 @@ const configureExpress = () => {
     },
   }));
 
-  // Opcjonalnie: Możesz dodać więcej middleware'ów tutaj, np. parsowanie JSON
   app.use(express.json());
   app.use(express.urlencoded({ extended: true }));
-
-  // Możesz dodać statyczne pliki lub inne middleware'y w razie potrzeby
-  // app.use(express.static('public'));
 
   return app;
 };
