@@ -1,4 +1,3 @@
-// validation/commentValidation.js
 const Joi = require('joi');
 
 const commentValidationSchema = Joi.object({
