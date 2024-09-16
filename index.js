@@ -10,13 +10,36 @@ const { createServer } = require('http');
 const { WebSocketServer } = require('ws');
 const { useServer } = require('graphql-ws/lib/use/ws');
 const Joi = require('joi');
+const userLoader = require('./loaders/userLoader');
+const redis = require('redis');
+const rateLimit = require('express-rate-limit');
+const helmet = require('helmet');
+const cors = require('cors');
 
 mongoose.connect(process.env.DATABASE_URL);
+
+const app = express();
+
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 100,
+  message: 'Za dużo zapytań z tego adresu IP, spróbuj ponownie później.',
+  standardHeaders: true, 
+  legacyHeaders: false,
+});
+
+app.use(limiter);
+app.use(helmet());
+app.use(cors({
+  origin: 'http://localhost:3000',
+  credentials: true,
+}));
 
 const UserModel = require('./models/User');
 const PostModel = require('./models/Post');
 const CommentModel = require('./models/Comment');
 const LikeModel = require('./models/Like');
+const exp = require('constants');
 
 const pubsub = new PubSub();
 
@@ -134,7 +157,19 @@ const resolvers = {
         .skip(offset)
         .limit(limit);
     },
-    post: async (parent, { id }) => await PostModel.findById(id),
+    post: async (parent, { id }, { redisClient }) => {
+      const cachedPost = await redisClient.get(`post:${id}`);
+      if (cachedPost) {
+        return JSON.parse(cachedPost);
+      }
+  
+      const post = await PostModel.findById(id);
+      if (post) {
+        await redisClient.setEx(`post:${id}`, 3600, JSON.stringify(post));
+      }
+  
+      return post;
+    },
     comments: async () => await CommentModel.find(),
     comment: async (parent, { id }) => await CommentModel.findById(id),
   },
@@ -347,8 +382,8 @@ const resolvers = {
     },
   },
   Post: {
-    author: async (parent) => {
-      return await UserModel.findById(parent.author);
+    author: async (parent, args, { userLoader }) => {
+      return await userLoader.load(parent.author.toString());
     },
     comments: async (parent) => {
       return await CommentModel.find({ post: parent.id });
@@ -376,9 +411,9 @@ const resolvers = {
     },
   },
   Comment: {
-    author: async (parent) => {
-      return await UserModel.findById(parent.author);
-    },
+    author: async (parent, args, { userLoader }) => {
+      return await userLoader.load(parent.author.toString());
+    },  
     post: async (parent) => {
       return await PostModel.findById(parent.post);
     },
@@ -399,6 +434,14 @@ const resolvers = {
     },
   },
 };
+
+const redisClient = redis.createClient({
+  url: process.env.REDIS_URL || 'redis://localhost:6379',
+});
+
+redisClient.on('error', (err) => console.error('Redis Client Error', err));
+
+redisClient.connect();
 
 async function startServer() {
   const app = express();
@@ -431,7 +474,7 @@ async function startServer() {
     context: async ({ req }) => {
       const token = req.headers.authorization || '';
       const user = await getUserFromToken(token);
-      return { user };
+      return { user, userLoader, redisClient };
     },
     plugins: [
       {
