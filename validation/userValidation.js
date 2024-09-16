@@ -1,4 +1,3 @@
-// validation/userValidation.js
 const Joi = require('joi');
 
 const userValidationSchema = Joi.object({
