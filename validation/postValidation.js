@@ -1,4 +1,3 @@
-// validation/postValidation.js
 const Joi = require('joi');
 
 const postValidationSchema = Joi.object({
