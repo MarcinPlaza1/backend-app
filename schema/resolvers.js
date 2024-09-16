@@ -1,4 +1,3 @@
-// schema/resolvers.js
 const { ApolloError } = require('apollo-server-express');
 const { withFilter } = require('graphql-subscriptions');
 const bcrypt = require('bcrypt');
