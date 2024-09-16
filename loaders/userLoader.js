@@ -1,4 +1,3 @@
-// loaders/userLoader.js
 const DataLoader = require('dataloader');
 const UserModel = require('../models/User');
 
