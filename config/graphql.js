@@ -1,16 +1,14 @@
-const { ApolloServer } = require('apollo-server-express');
-const { makeExecutableSchema } = require('@graphql-tools/schema');
-const { createServer } = require('http');
-const { WebSocketServer } = require('ws');
-const { useServer } = require('graphql-ws/lib/use/ws');
-const jwt = require('jsonwebtoken');
-const userLoader = require('../loaders/userLoader');
-const { redisClient, pubsub } = require('./redis');
-const typeDefs = require('../schema/typeDefs');
-const resolvers = require('../schema/resolvers');
-const logger = require('../utils/logger');
-
-const UserModel = require('../models/User');
+import { ApolloServer } from 'apollo-server-express';
+import { createServer } from 'http';
+import { WebSocketServer } from 'ws';
+import { useServer } from 'graphql-ws/lib/use/ws';
+import jwt from 'jsonwebtoken';
+import userLoader from '../loaders/userLoader.js';
+import { redisClient, pubsub } from './redis.js';
+import typeDefs from '../schema/typeDefs.js';
+import resolvers from '../schema/resolvers/index.js';
+import logger from '../utils/logger.js';
+import UserModel from '../models/User.js';
 
 const getUserFromToken = async (token) => {
   if (!token) return null;
@@ -23,17 +21,33 @@ const getUserFromToken = async (token) => {
   }
 };
 
-const setupGraphQL = async (app, httpServer) => {
-  const schema = makeExecutableSchema({ typeDefs, resolvers });
+const setupGraphQL = async (app) => {
+  const server = new ApolloServer({
+    typeDefs,
+    resolvers,
+    context: async ({ req, connection }) => {
+      if (connection) {
+        return connection.context;
+      } else {
+        const token = req.headers.authorization || '';
+        const user = await getUserFromToken(token);
+        return { user, userLoader, redisClient, pubsub };
+      }
+    },
+  });
 
+  await server.start();
+  server.applyMiddleware({ app, path: '/graphql' });
+
+  const httpServer = createServer(app);
   const wsServer = new WebSocketServer({
     server: httpServer,
     path: '/graphql',
   });
 
-  const serverCleanup = useServer(
+  useServer(
     {
-      schema,
+      schema: server.schema,
       context: async (ctx) => {
         const token = ctx.connectionParams?.authorization || '';
         const user = await getUserFromToken(token);
@@ -43,30 +57,7 @@ const setupGraphQL = async (app, httpServer) => {
     wsServer
   );
 
-  const server = new ApolloServer({
-    schema,
-    context: async ({ req }) => {
-      const token = req.headers.authorization || '';
-      const user = await getUserFromToken(token);
-      return { user, userLoader, redisClient, pubsub };
-    },
-    plugins: [
-      {
-        async serverWillStart() {
-          return {
-            async drainServer() {
-              await serverCleanup.dispose();
-            },
-          };
-        },
-      },
-    ],
-  });
-
-  await server.start();
-  server.applyMiddleware({ app });
-
-  return server;
+  return { server, httpServer };
 };
 
-module.exports = setupGraphQL;
+export default setupGraphQL;

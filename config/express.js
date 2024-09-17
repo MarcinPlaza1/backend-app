@@ -1,9 +1,9 @@
-const express = require('express');
-const rateLimiter = require('../middleware/rateLimiter');
-const configureHelmet = require('../middleware/helmetConfig');
-const corsConfig = require('../middleware/corsConfig');
-const morgan = require('morgan');
-const logger = require('../utils/logger');
+import express from 'express';
+import rateLimiter from '../middleware/rateLimiter.js';
+import configureHelmet from '../middleware/helmetConfig.js';
+import corsConfig from '../middleware/corsConfig.js';
+import morgan from 'morgan';
+import logger from '../utils/logger.js';
 
 /**
  * Funkcja konfigurująca instancję Express.
@@ -27,4 +27,4 @@ const configureExpress = () => {
   return app;
 };
 
-module.exports = configureExpress;
+export default configureExpress;

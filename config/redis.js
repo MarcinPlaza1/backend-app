@@ -1,6 +1,6 @@
-const Redis = require('ioredis');
-const { RedisPubSub } = require('graphql-redis-subscriptions');
-const logger = require('../utils/logger');
+import Redis from 'ioredis';
+import { RedisPubSub } from 'graphql-redis-subscriptions';
+import logger from '../utils/logger.js';
 
 const redisOptions = {
   host: process.env.REDIS_HOST || 'localhost',
@@ -19,4 +19,4 @@ const pubsub = new RedisPubSub({
   subscriber: redisClient,
 });
 
-module.exports = { redisClient, pubsub };
+export { redisClient, pubsub };
