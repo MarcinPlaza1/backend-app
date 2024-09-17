@@ -34,4 +34,5 @@ Utwórz plik .env w katalogu głównym z następującymi zmiennymi:
 DATABASE_URL=mongodb://localhost:27017/graphql_db
 PORT=4000
 SECRET_KEY=TwojSekretnyKlucz
+REDIS_URL=redis://localhost:6379
 ```
