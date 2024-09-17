@@ -1,7 +1,5 @@
 const invalidateCache = async (redisClient, keys = []) => {
-  for (let key of keys) {
-    await redisClient.del(key);
-  }
+  await Promise.all(keys.map((key) => redisClient.del(key)));
 };
 
-module.exports = invalidateCache;
+export default invalidateCache;

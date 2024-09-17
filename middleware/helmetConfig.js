@@ -1,4 +1,4 @@
-const helmet = require('helmet');
+import helmet from 'helmet';
 
 const configureHelmet = () => {
   const isProduction = process.env.NODE_ENV === 'production';
@@ -46,4 +46,4 @@ const configureHelmet = () => {
   });
 };
 
-module.exports = configureHelmet;
+export default configureHelmet;

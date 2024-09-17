@@ -1,6 +1,6 @@
-const userResolvers = require('./userResolvers');
-const postResolvers = require('./postResolvers');
-const commentResolvers = require('./commentResolvers');
+import userResolvers from './userResolvers.js';
+import postResolvers from './postResolvers.js';
+import commentResolvers from './commentResolvers.js';
 
 const resolvers = {
   Query: {
@@ -29,4 +29,4 @@ const resolvers = {
   },
 };
 
-module.exports = resolvers;
+export default resolvers;

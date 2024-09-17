@@ -1,4 +1,5 @@
-const { ApolloError } = require('apollo-server-express');
+import { ApolloError } from 'apollo-server-express';
+
 
 const validateInput = (schema, args) => {
   const { error } = schema.validate(args);
@@ -7,4 +8,4 @@ const validateInput = (schema, args) => {
   }
 };
 
-module.exports = validateInput;
+export default validateInput;

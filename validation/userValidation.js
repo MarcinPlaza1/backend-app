@@ -1,4 +1,4 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const userValidationSchema = Joi.object({
   name: Joi.string().min(3).required(),
@@ -6,4 +6,4 @@ const userValidationSchema = Joi.object({
   password: Joi.string().min(6).required(),
 });
 
-module.exports = userValidationSchema;
+export default userValidationSchema;

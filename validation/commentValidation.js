@@ -1,7 +1,7 @@
-const Joi = require('joi');
+import Joi from 'joi';
 
 const commentValidationSchema = Joi.object({
   content: Joi.string().min(1).required(),
 });
 
-module.exports = commentValidationSchema;
+export default commentValidationSchema;

@@ -1,4 +1,4 @@
-const cors = require('cors');
+import cors from 'cors';
 
 const corsOptions = {
   origin: [
@@ -9,4 +9,4 @@ const corsOptions = {
   credentials: true,
 };
 
-module.exports = cors(corsOptions);
+export default cors(corsOptions);

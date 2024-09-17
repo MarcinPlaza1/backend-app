@@ -1,4 +1,4 @@
-const { gql } = require('apollo-server-express');
+import { gql } from 'apollo-server-express';
 
 const typeDefs = gql`
   scalar Date
@@ -50,15 +50,12 @@ const typeDefs = gql`
   type Mutation {
     register(name: String!, email: String!, password: String!): AuthPayload
     login(email: String!, password: String!): AuthPayload
-
     createPost(title: String!, content: String!): Post
     updatePost(id: ID!, title: String, content: String): Post
     deletePost(id: ID!): Post
-
     createComment(postId: ID!, content: String!): Comment
     updateComment(id: ID!, content: String!): Comment
     deleteComment(id: ID!): Comment
-
     likePost(postId: ID!): Boolean
     unlikePost(postId: ID!): Boolean
     likeComment(commentId: ID!): Boolean
@@ -72,4 +69,4 @@ const typeDefs = gql`
   }
 `;
 
-module.exports = typeDefs;
+export default typeDefs;

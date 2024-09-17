@@ -6,4 +6,4 @@ const buildQueryOptions = ({ limit = 10, offset = 0, sortBy = 'createdAt', sortO
   };
 };
 
-module.exports = buildQueryOptions;
+export default buildQueryOptions;
