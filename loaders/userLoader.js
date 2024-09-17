@@ -1,5 +1,5 @@
-const DataLoader = require('dataloader');
-const UserModel = require('../models/User');
+import DataLoader from 'dataloader';
+import UserModel from '../models/User.js';
 
 const userLoader = new DataLoader(async (userIds) => {
   const users = await UserModel.find({ _id: { $in: userIds } });
@@ -10,4 +10,4 @@ const userLoader = new DataLoader(async (userIds) => {
   return userIds.map(id => userMap.get(id) || null);
 });
 
-module.exports = userLoader;
+export default userLoader;
