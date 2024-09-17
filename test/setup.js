@@ -9,7 +9,7 @@ let httpServer;
 
 before(async () => {
   this.timeout(20000);
-  process.env.DATABASE_URL = 'mongodb+srv://plazamarcin098:FhhKOH0xD8ZYsSwr@backend.emobtl9.mongodb.net/';
+  process.env.DATABASE_URL = '';
   await config.connectMongoDB();
   app = configureExpress();
   const serverConfig = await setupGraphQL(app);
